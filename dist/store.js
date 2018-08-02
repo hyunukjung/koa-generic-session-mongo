@@ -30,10 +30,6 @@ var _events = require('events');
 
 var _mongodb = require('mongodb');
 
-var _thunkify = require('thunkify');
-
-var _thunkify2 = _interopRequireDefault(_thunkify);
-
 var _debug = require('debug');
 
 var _debug2 = _interopRequireDefault(_debug);
@@ -153,29 +149,28 @@ var MongoStore = (function (_EventEmitter) {
      * @param {Function} fn
      * @api public
      */
-    value: _regeneratorRuntime.mark(function get(sid) {
-      var col, findOne;
-      return _regeneratorRuntime.wrap(function get$(context$2$0) {
+    value: function get(sid) {
+      var col;
+      return _regeneratorRuntime.async(function get$(context$2$0) {
         while (1) switch (context$2$0.prev = context$2$0.next) {
           case 0:
             context$2$0.next = 2;
-            return this.col;
+            return _regeneratorRuntime.awrap(this.col);
 
           case 2:
             col = context$2$0.sent;
-            findOne = (0, _thunkify2['default'])(col.findOne.bind(col));
-            context$2$0.next = 6;
-            return findOne({ sid: sid }, { _id: 0, ttl: 0, sid: 0 });
+            context$2$0.next = 5;
+            return _regeneratorRuntime.awrap(col.findOne({ sid: sid }, { _id: 0, ttl: 0, sid: 0 }));
 
-          case 6:
+          case 5:
             return context$2$0.abrupt('return', context$2$0.sent);
 
-          case 7:
+          case 6:
           case 'end':
             return context$2$0.stop();
         }
-      }, get, this);
-    })
+      }, null, this);
+    }
 
     /**
      * Commit the given `sess` object associated with the given `sid`.
@@ -186,36 +181,35 @@ var MongoStore = (function (_EventEmitter) {
      */
   }, {
     key: 'set',
-    value: _regeneratorRuntime.mark(function set(sid, sess, ttl) {
-      var maxAge, col, update;
-      return _regeneratorRuntime.wrap(function set$(context$2$0) {
+    value: function set(sid, sess, ttl) {
+      var maxAge, col;
+      return _regeneratorRuntime.async(function set$(context$2$0) {
         while (1) switch (context$2$0.prev = context$2$0.next) {
           case 0:
             // clone original sess
             sess = _extends({}, sess);
             maxAge = sess.cookie && (sess.cookie.maxAge || sess.cookie.maxage);
             context$2$0.next = 4;
-            return this.col;
+            return _regeneratorRuntime.awrap(this.col);
 
           case 4:
             col = context$2$0.sent;
-            update = (0, _thunkify2['default'])(col.update.bind(col));
 
             sess.sid = sid;
             sess.ttl = new Date((ttl || ('number' == typeof maxAge ? maxAge : ONE_DAY)) + Date.now());
 
-            context$2$0.next = 10;
-            return update({ sid: sid }, sess, { upsert: true });
+            context$2$0.next = 9;
+            return _regeneratorRuntime.awrap(col.update({ sid: sid }, sess, { upsert: true }));
 
-          case 10:
+          case 9:
             return context$2$0.abrupt('return', context$2$0.sent);
 
-          case 11:
+          case 10:
           case 'end':
             return context$2$0.stop();
         }
-      }, set, this);
-    })
+      }, null, this);
+    }
 
     /**
      * Destroy the session associated with the given `sid`.
@@ -225,26 +219,25 @@ var MongoStore = (function (_EventEmitter) {
      */
   }, {
     key: 'destroy',
-    value: _regeneratorRuntime.mark(function destroy(sid) {
-      var col, remove;
-      return _regeneratorRuntime.wrap(function destroy$(context$2$0) {
+    value: function destroy(sid) {
+      var col;
+      return _regeneratorRuntime.async(function destroy$(context$2$0) {
         while (1) switch (context$2$0.prev = context$2$0.next) {
           case 0:
             context$2$0.next = 2;
-            return this.col;
+            return _regeneratorRuntime.awrap(this.col);
 
           case 2:
             col = context$2$0.sent;
-            remove = (0, _thunkify2['default'])(col.remove.bind(col));
-            context$2$0.next = 6;
-            return remove({ sid: sid });
+            context$2$0.next = 5;
+            return _regeneratorRuntime.awrap(col.remove({ sid: sid }));
 
-          case 6:
+          case 5:
           case 'end':
             return context$2$0.stop();
         }
-      }, destroy, this);
-    })
+      }, null, this);
+    }
   }], [{
     key: '_makeConnectionString',
     value: function _makeConnectionString(_ref3) {

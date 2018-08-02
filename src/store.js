@@ -8,7 +8,6 @@
 
 import {EventEmitter} from 'events';
 import {MongoClient} from 'mongodb';
-import thunkify from 'thunkify';
 import debug from 'debug';
 
 const log = debug('koa-generic-session-mongo:store');
@@ -132,11 +131,9 @@ export default class MongoStore extends EventEmitter {
    * @param {Function} fn
    * @api public
    */
-  *get(sid) {
-    const col = yield this.col;
-    const findOne = thunkify(col.findOne.bind(col));
-
-    return yield findOne({sid: sid}, {_id: 0, ttl: 0, sid: 0});
+  async get(sid) {
+    const col = await this.col;
+    return await col.findOne({ sid }, { _id: 0, ttl: 0, sid: 0 });
   }
 
   /**
@@ -146,18 +143,17 @@ export default class MongoStore extends EventEmitter {
    * @param {Session} sess
    * @api public
    */
-  *set(sid, sess, ttl) {
+  async set(sid, sess, ttl) {
     // clone original sess
     sess = {...sess};
     const maxAge = sess.cookie && (sess.cookie.maxAge || sess.cookie.maxage);
-    const col = yield this.col;
-    const update = thunkify(col.update.bind(col));
+    const col = await this.col;
 
     sess.sid = sid;
     sess.ttl = new Date((ttl || ('number' == typeof maxAge
       ? maxAge : ONE_DAY)) + Date.now());
 
-    return yield update({sid: sid}, sess, {upsert: true});
+    return await col.update({ sid }, sess, { upsert: true });
   }
 
   /**
@@ -166,10 +162,8 @@ export default class MongoStore extends EventEmitter {
    * @param {String} sid
    * @api public
    */
-  *destroy(sid) {
-    const col = yield this.col;
-    const remove = thunkify(col.remove.bind(col));
-
-    yield remove({sid: sid});
+  async destroy(sid) {
+    const col = await this.col;
+    await col.remove({ sid });
   }
 }
